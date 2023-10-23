@@ -17,6 +17,10 @@
     $_item = $block->getItem();
     $_order = $_item->getOrder();
     $_imageHelper = \Magento\Framework\App\ObjectManager::getInstance()->get('Magento\Catalog\Helper\Image');
+    $_store = $_order->getStore();
+    $currencyCode = $_store->getCurrentCurrencyCode();
+    $currency = \Magento\Framework\App\ObjectManager::getInstance()->create('Magento\Directory\Model\CurrencyFactory')->create()->load($currencyCode);
+    $currencySymbol = $currency->getCurrencySymbol();
 ?>
 <tr>
     <td class="item-info<?= ($block->getItemOptions() ? ' has-extra' : '') ?>">
@@ -51,14 +55,17 @@
         </div>
     </td>
 
-    <td class="item-price" style="text-align:center;">
+    <td class="item-price" style="text-align:center;  color: #000;">
         <?= /* @noEscape */ $block->getItemPrice($_item) ?>
     </td>
 
-    <td class="item-qty" style="text-align:center;" ><?= (float) $_item->getQtyOrdered() ?></td>
+    <td class="item-qty" style="text-align:center;  color: #000;" >
+        <?= (float) $_item->getQtyOrdered() ?>
+    </td>
 
-
-    <td class="item-total" style="text-align:center;"><?= (float) $_item->getRowTotal() ?></td>
+    <td class="item-total" style="text-align:center; color: #000;">
+        <?=  $currencySymbol.number_format($_item->getRowTotal(), 2); ?>
+    </td>
 </tr>
 <?php if ($_item->getGiftMessageId()
     && $_giftMessage = $this->helper(\Magento\GiftMessage\Helper\Message::class)
